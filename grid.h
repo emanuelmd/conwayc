@@ -4,8 +4,13 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+typedef struct Cell {
+  bool is_hover;
+  bool is_active;
+} Cell;
+
 typedef struct Grid {
-  bool **matrix;
+  Cell **matrix;
   unsigned int width;
   unsigned int height;
 } ConwayGrid;
