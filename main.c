@@ -8,8 +8,8 @@
 #include "grid.h"
 #include "utils.h"
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH 1024
+#define WINDOW_HEIGHT 768
 
 #define SQUARE_SIZE 40
 
@@ -23,7 +23,7 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
 
   ALLEGRO_EVENT event;
 
-  bool redraw = false;
+  bool redraw = false, is_autoplay = false, should_advance = false;
 
   ALLEGRO_COLOR white = al_map_rgb(255, 255, 255), black = al_map_rgb(0, 0, 0);
 
@@ -37,6 +37,7 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
 
     if (event.type == ALLEGRO_EVENT_TIMER) {
       redraw = true;
+      should_advance = event.timer.count % 15 == 0;
     }
 
     bool is_mouse_move = event.type == ALLEGRO_EVENT_MOUSE_AXES;
@@ -62,6 +63,20 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
       }
     }
 
+    if (is_key_pressed(event, ALLEGRO_KEY_SPACE) && !is_autoplay) {
+      advance_grid(grid);
+      redraw = true;
+    }
+
+    if (is_autoplay && should_advance) {
+      advance_grid(grid);
+      redraw = true;
+    }
+
+    if (is_key_pressed(event, ALLEGRO_KEY_P)) {
+      is_autoplay = !is_autoplay;
+    }
+
     if (redraw && al_is_event_queue_empty(queue)) {
 
       al_clear_to_color(black);
@@ -84,14 +99,6 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
       al_flip_display();
 
       redraw = false;
-    }
-
-    if (is_key_pressed(event, ALLEGRO_KEY_SPACE)) {
-      for (int i = 0; i < SQUARES; i++) {
-        for (int j = 0; j < SQUARES; j++) {
-          advance_grid(grid);
-        }
-      }
     }
 
     if (is_key_pressed(event, ALLEGRO_KEY_ESCAPE) ||

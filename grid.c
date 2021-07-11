@@ -59,34 +59,38 @@ typedef struct CellN {
 
 int count_neighbours(ConwayGrid *grid, int x, int y) {
 
-  int neighbours[8] = {// Top Left
-                       x - 1, y - 1,
-                       // Top
-                       x, y - 1,
-                       // Top Right
-                       x + 1, y - 1,
-                       // Left
-                       x - 1, y,
-                       // Center
-                       x, y,
-                       // Right
-                       x + 1, y,
-                       // Bottom Left
-                       x - 1, y + 1,
-                       // Bottom Center
-                       x, y + 1,
-                       // Bottom Right
-                       x + 1, y + 1};
+  int neighbours[16] = {// Top Left
+                        x - 1, y - 1,
+                        // Top
+                        x, y - 1,
+                        // Top Right
+                        x + 1, y - 1,
+                        // Left
+                        x - 1, y,
+                        // Right
+                        x + 1, y,
+                        // Bottom Left
+                        x - 1, y + 1,
+                        // Bottom Center
+                        x, y + 1,
+                        // Bottom Right
+                        x + 1, y + 1};
 
   int result = 0;
 
-  for (int i = 0; i < 10; i += 2) {
+  for (int i = 0; i < 16; i += 2) {
     int x1 = neighbours[i], y1 = neighbours[i + 1];
 
     bool is_outside =
         x1 < 0 || y1 < 0 || x1 >= grid->width || y1 >= grid->height;
 
-    if (!is_outside && grid->matrix[y][x].is_active) {
+    if (is_outside) {
+      continue;
+    }
+
+    Cell neighbour = grid->matrix[y1][x1];
+
+    if (neighbour.is_active) {
       result++;
     }
   }
@@ -104,8 +108,6 @@ void advance_grid(ConwayGrid *grid) {
     for (unsigned int x = 0; x < grid->width; x++) {
 
       int alive_neighbours = count_neighbours(grid, x, y);
-
-      printf("Alive N %d\n", alive_neighbours);
 
       Cell current_cell = grid->matrix[y][x];
 
