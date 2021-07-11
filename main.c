@@ -86,7 +86,16 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
       redraw = false;
     }
 
+    if (is_key_pressed(event, ALLEGRO_KEY_SPACE)) {
+      for (int i = 0; i < SQUARES; i++) {
+        for (int j = 0; j < SQUARES; j++) {
+          advance_grid(grid);
+        }
+      }
+    }
+
     if (is_key_pressed(event, ALLEGRO_KEY_ESCAPE) ||
+        is_key_pressed(event, ALLEGRO_KEY_Q) ||
         (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)) {
       break;
     }
