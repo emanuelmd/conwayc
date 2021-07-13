@@ -24,7 +24,7 @@ ConwayGrid *init_grid(unsigned int width, unsigned int height) {
   return result;
 }
 
-void free_conway_grid(ConwayGrid *grid) {
+void free_grid(ConwayGrid *grid) {
 
   for (unsigned int i = 0; i < grid->height; i++) {
     free(grid->matrix[i]);

@@ -1,5 +1,5 @@
 CC = gcc --std=c99 -Wall -Wpedantic
-LIBS = -lallegro -lallegro_primitives
+LIBS = -lallegro -lallegro_primitives -lallegro_font
 
 default: execute
 

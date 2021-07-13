@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
@@ -25,19 +26,44 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
 
   bool redraw = false, is_autoplay = false, should_advance = false;
 
-  ALLEGRO_COLOR white = al_map_rgb(255, 255, 255), black = al_map_rgb(0, 0, 0);
+  ALLEGRO_COLOR background = al_map_rgb(128, 128, 128),
+                active = al_map_rgb(247, 214, 208),
+                inactive = al_map_rgb(255, 255, 240);
 
   int SIZE = 50, SQUARES = 20;
 
+  long int total_ticks = 0;
+
   ConwayGrid *grid = init_grid(SQUARES, SQUARES);
+
+  ALLEGRO_FONT *font = al_create_builtin_font();
 
   while (true) {
 
     al_wait_for_event(queue, &event);
 
+    if (is_key_pressed(event, ALLEGRO_KEY_ESCAPE) ||
+        is_key_pressed(event, ALLEGRO_KEY_Q) ||
+        (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)) {
+      break;
+    }
+
     if (event.type == ALLEGRO_EVENT_TIMER) {
       redraw = true;
       should_advance = event.timer.count % 15 == 0;
+      total_ticks = event.timer.count;
+    }
+
+    if (is_key_pressed(event, ALLEGRO_KEY_P)) {
+      is_autoplay = !is_autoplay;
+    }
+
+    if (is_key_pressed(event, ALLEGRO_KEY_SPACE) && !is_autoplay) {
+      advance_grid(grid);
+    }
+
+    if (is_autoplay && should_advance) {
+      advance_grid(grid);
     }
 
     bool is_mouse_move = event.type == ALLEGRO_EVENT_MOUSE_AXES;
@@ -63,50 +89,36 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
       }
     }
 
-    if (is_key_pressed(event, ALLEGRO_KEY_SPACE) && !is_autoplay) {
-      advance_grid(grid);
-      redraw = true;
-    }
-
-    if (is_autoplay && should_advance) {
-      advance_grid(grid);
-      redraw = true;
-    }
-
-    if (is_key_pressed(event, ALLEGRO_KEY_P)) {
-      is_autoplay = !is_autoplay;
-    }
-
     if (redraw && al_is_event_queue_empty(queue)) {
 
-      al_clear_to_color(black);
+      al_clear_to_color(background);
 
       for (int i = 0; i < SQUARES; i++) {
         for (int j = 0; j < SQUARES; j++) {
 
           int x1 = j * SIZE, y1 = i * SIZE;
 
-          Cell cell = grid->matrix[i][j];
+          Cell *cell = &grid->matrix[i][j];
 
-          if (cell.is_active || cell.is_hover) {
-            al_draw_filled_rectangle(x1, y1, x1 + SIZE, y1 + SIZE, white);
+          if (cell->is_active || cell->is_hover) {
+            al_draw_filled_rectangle(x1, y1, x1 + SIZE, y1 + SIZE,
+                                     is_autoplay ? active : inactive);
           } else {
-            al_draw_rectangle(x1, y1, x1 + SIZE, y1 + SIZE, white, 1.0);
+            al_draw_rectangle(x1, y1, x1 + SIZE, y1 + SIZE, background, 1.0);
           }
         }
       }
+
+      al_draw_textf(font, al_map_rgb_f(1, 1, 1), 10, 10, 0, "TICKS: %i",
+                    total_ticks);
 
       al_flip_display();
 
       redraw = false;
     }
-
-    if (is_key_pressed(event, ALLEGRO_KEY_ESCAPE) ||
-        is_key_pressed(event, ALLEGRO_KEY_Q) ||
-        (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)) {
-      break;
-    }
   }
+
+  free_grid(grid);
 }
 
 int main(void) {
