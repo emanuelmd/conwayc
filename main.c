@@ -12,8 +12,6 @@
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 
-#define SQUARE_SIZE 40
-
 bool between(int p, int x1, int x2) { return p > x1 && p <= x2; }
 
 bool mouse_between(ALLEGRO_EVENT event, int x1, int x2, int y1, int y2) {
@@ -22,7 +20,7 @@ bool mouse_between(ALLEGRO_EVENT event, int x1, int x2, int y1, int y2) {
 
 void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
 
-  ALLEGRO_TIMER *logic_timer = al_create_timer(2.0);
+  ALLEGRO_TIMER *logic_timer = al_create_timer(0.25);
 
   al_register_event_source(queue, al_get_timer_event_source(logic_timer));
   al_start_timer(logic_timer);
@@ -35,7 +33,7 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
                 active = al_map_rgb(247, 214, 208),
                 inactive = al_map_rgb(255, 255, 240);
 
-  int SIZE = 50, SQUARES = 20;
+  int SIZE = 20, SQUARES = 120;
 
   ConwayGrid *grid = init_grid(SQUARES, SQUARES);
 
@@ -61,8 +59,23 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
       advance_grid(grid);
     }
 
-    if (is_autoplay && event.timer.source == logic_timer) {
-      advance_grid(grid);
+    if (is_key_pressed(event, ALLEGRO_KEY_C)) {
+
+      is_autoplay = false;
+
+      for (int i = 0; i < SQUARES; i++) {
+        for (int j = 0; j < SQUARES; j++) {
+          Cell *current_cell = &grid->matrix[i][j];
+          current_cell->is_active = false;
+        }
+      }
+    }
+
+    if (event.timer.source == logic_timer) {
+      if (is_autoplay) {
+        advance_grid(grid);
+      }
+
     }
 
     bool is_mouse_move = event.type == ALLEGRO_EVENT_MOUSE_AXES;
@@ -113,6 +126,8 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
       redraw = false;
     }
   }
+
+  al_destroy_timer(logic_timer);
 
   free_grid(grid);
 }
