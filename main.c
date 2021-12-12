@@ -22,9 +22,14 @@ bool mouse_between(ALLEGRO_EVENT event, int x1, int x2, int y1, int y2) {
 
 void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
 
+  ALLEGRO_TIMER *logic_timer = al_create_timer(2.0);
+
+  al_register_event_source(queue, al_get_timer_event_source(logic_timer));
+  al_start_timer(logic_timer);
+
   ALLEGRO_EVENT event;
 
-  bool redraw = false, is_autoplay = false, should_advance = false;
+  bool redraw = false, is_autoplay = false;
 
   ALLEGRO_COLOR background = al_map_rgb(128, 128, 128),
                 active = al_map_rgb(247, 214, 208),
@@ -32,11 +37,7 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
 
   int SIZE = 50, SQUARES = 20;
 
-  long int total_ticks = 0;
-
   ConwayGrid *grid = init_grid(SQUARES, SQUARES);
-
-  ALLEGRO_FONT *font = al_create_builtin_font();
 
   while (true) {
 
@@ -50,8 +51,6 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
 
     if (event.type == ALLEGRO_EVENT_TIMER) {
       redraw = true;
-      should_advance = event.timer.count % 15 == 0;
-      total_ticks = event.timer.count;
     }
 
     if (is_key_pressed(event, ALLEGRO_KEY_P)) {
@@ -62,7 +61,7 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
       advance_grid(grid);
     }
 
-    if (is_autoplay && should_advance) {
+    if (is_autoplay && event.timer.source == logic_timer) {
       advance_grid(grid);
     }
 
@@ -109,9 +108,6 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
         }
       }
 
-      al_draw_textf(font, al_map_rgb_f(1, 1, 1), 10, 10, 0, "TICKS: %i",
-                    total_ticks);
-
       al_flip_display();
 
       redraw = false;
@@ -130,6 +126,7 @@ int main(void) {
 
   ALLEGRO_DISPLAY *main_display =
       al_create_display(WINDOW_WIDTH, WINDOW_HEIGHT);
+
   must_init(main_display, "allegro-display");
 
   ALLEGRO_TIMER *timer = al_create_timer(1.0 / 60.0);

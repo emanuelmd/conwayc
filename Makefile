@@ -4,7 +4,7 @@ LIBS = -lallegro -lallegro_primitives -lallegro_font
 default: execute
 
 execute: compile
-	prime-run ./main
+	./main
 
 compile:
 	$(CC) *.c $(LIBS) -o main
