@@ -30,16 +30,13 @@ class Grid:
     def height(self):
         return len(self._matrix)
 
-    def _is_out_of_bounds(self, x, y):
-        return True
-
     def _generate_neighbours(self, x, y):
-        def is_outside(p):
+        def is_inside(p):
             (x1, y1) = p
             return x1 > 0 and y1 > 0 and x1 < self.width and y1 < self.height
 
         inside_neighbours = filter(
-            is_outside,
+            is_inside,
             [
                 (x - 1, y),
                 (x + 1, y),
