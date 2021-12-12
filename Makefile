@@ -4,6 +4,9 @@ LIBS = -lallegro -lallegro_primitives
 default: execute
 
 execute: compile
+	./main
+
+prime: compile
 	prime-run ./main
 
 compile:
