@@ -1,6 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <allegro5/allegro.h>
-#include <stdlib.h>
 
 void must_init(bool test, const char *description) {
   if (test)

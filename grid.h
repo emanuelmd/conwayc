@@ -17,7 +17,8 @@ typedef struct Grid {
 
 ConwayGrid *init_grid(unsigned int width, unsigned int height);
 
-void free_conway_grid(ConwayGrid *grid);
+void free_grid(ConwayGrid *grid);
 void print_grid(ConwayGrid *grid);
+void advance_grid(ConwayGrid *grid);
 
 #endif
