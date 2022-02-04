@@ -95,6 +95,7 @@ void render_loop(ALLEGRO_EVENT_QUEUE *queue) {
           current_cell->is_hover = is_between;
 
           if (is_mouse_click && is_between) {
+            is_autoplay = false;
             current_cell->is_active = !current_cell->is_active;
           }
         }

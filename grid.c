@@ -57,9 +57,9 @@ typedef struct CellN {
   bool is_active;
 } CellN;
 
-int count_neighbours(ConwayGrid *grid, int x, int y) {
+int count_alive_neighbours(ConwayGrid *grid, int x, int y) {
 
-  int neighbours[16] = {// Top Left
+  unsigned int neighbours[16] = {// Top Left
                         x - 1, y - 1,
                         // Top
                         x, y - 1,
@@ -107,7 +107,7 @@ void advance_grid(ConwayGrid *grid) {
   for (unsigned int y = 0; y < grid->height; y++) {
     for (unsigned int x = 0; x < grid->width; x++) {
 
-      int alive_neighbours = count_neighbours(grid, x, y);
+      int alive_neighbours = count_alive_neighbours(grid, x, y);
 
       Cell current_cell = grid->matrix[y][x];
 
